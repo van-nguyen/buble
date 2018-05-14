@@ -185,15 +185,15 @@ export default class BlockStatement extends Node {
 			if (this.parent.type === 'FunctionDeclaration') {
 				if (hasOnlyOneLine) {
 					if (first.type === 'ReturnStatement') {
-						code.insertLeft(first.argument.start, 'Promise.resolve().then(function() { ');
-						code.insertLeft(first.end, ' })');
+						code.appendLeft(first.argument.start, 'Promise.resolve().then(function() { ');
+						code.appendLeft(first.end, ' })');
 					} else {
-						code.insertLeft(first.start, 'return Promise.resolve().then(function() { ');
-						code.insertRight(last.end, ' }).then(function() {})');
+						code.appendLeft(first.start, 'return Promise.resolve().then(function() { ');
+						code.prependRight(last.end, ' }).then(function() {})');
 					}
 				} else {
-					code.insertLeft(first.start, 'return Promise.resolve()');
-					code.insertRight(last.end, '.then(function() {})');
+					code.appendLeft(first.start, 'return Promise.resolve()');
+					code.prependRight(last.end, '.then(function() {})');
 
 					for (let i = 0; i < this.body.length; i++) {
 						const prev = this.body[i - 1];
@@ -201,15 +201,15 @@ export default class BlockStatement extends Node {
 						const next = this.body[i + 1];
 
 						if (cur.expression.type === 'AwaitExpression') {
-							code.insertLeft(cur.start, '.then(function() { ');
-							code.insertRight(cur.end, ' })');
+							code.appendLeft(cur.start, '.then(function() { ');
+							code.prependRight(cur.end, ' })');
 						} else {
 							if (!prev || prev.expression.type === 'AwaitExpression') {
-								code.insertLeft(cur.start, '.then(function() { ');
+								code.appendLeft(cur.start, '.then(function() { ');
 							}
 
 							if (!next || next.expression.type === 'AwaitExpression') {
-								code.insertRight(cur.end, ' })');
+								code.prependRight(cur.end, ' })');
 							}
 						}
 					}
@@ -218,8 +218,8 @@ export default class BlockStatement extends Node {
 			} else if (this.parent.type === 'ArrowFunctionExpression') {
 				// TODO merge with ^
 				// wrap the function's body in a promise
-				code.insertLeft(first.start + 1, 'Promise.resolve().then(function() { return ');
-				code.insertLeft(last.end, ' })');
+				code.appendLeft(first.start + 1, 'Promise.resolve().then(function() { return ');
+				code.appendLeft(last.end, ' })');
 			}
 		}
 
