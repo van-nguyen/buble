@@ -12,7 +12,7 @@ export default class AwaitExpression extends Node {
 
 	transpile (code, transforms) {
 		AwaitExpression.removeAsync(code, transforms, true, this.start, () => {
-			code.insertLeft(this.argument.start, 'return ');
+			code.appendLeft(this.argument.start, 'return ');
 		});
 
 		super.transpile(code, transforms);
